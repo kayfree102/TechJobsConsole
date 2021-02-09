@@ -16,10 +16,7 @@ namespace TechJobsConsole
             return AllJobs;
         }
 
-        /*
-         * Returns a list of all values contained in a given column,
-         * without duplicates. 
-         */
+        
         public static List<string> FindAll(string column)
         {
             LoadData();
@@ -40,16 +37,16 @@ namespace TechJobsConsole
 
         public static List<Dictionary<string, string>> FindByColumnAndValue(string column, string value)
         {
-            // load data, if not already loaded
+           
             LoadData();
 
             List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
 
             foreach (Dictionary<string, string> row in AllJobs)
             {
-                string aValue = row[column];
+                string aValue = row[column].ToLower();
 
-                if (aValue.Contains(value))
+                if (aValue.Contains(value.ToLower()))
                 {
                     jobs.Add(row);
                 }
@@ -57,10 +54,32 @@ namespace TechJobsConsole
 
             return jobs;
         }
+        public static List<Dictionary<string, string>> FindByValue(string value)
+        {
+            
+            LoadData();
 
-        /*
-         * Load and parse data from job_data.csv
-         */
+            List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
+
+            foreach (Dictionary<string, string> row in AllJobs)
+            {
+                foreach (string result in row.Values)
+                {
+                    string aValue = result.ToLower();
+
+                    if (aValue.Contains(value.ToLower()))
+                    {
+                        jobs.Add(row);
+                        break;
+                    }
+                }
+            }
+
+
+            return jobs;
+        }
+
+       
         private static void LoadData()
         {
 
@@ -76,10 +95,10 @@ namespace TechJobsConsole
                 while (reader.Peek() >= 0)
                 {
                     string line = reader.ReadLine();
-                    string[] rowArrray = CSVRowToStringArray(line);
-                    if (rowArrray.Length > 0)
+                    string[] rowArray = CSVRowToStringArray(line);
+                    if (rowArray.Length > 0)
                     {
-                        rows.Add(rowArrray);
+                        rows.Add(rowArray);
                     }
                 }
             }
@@ -87,7 +106,7 @@ namespace TechJobsConsole
             string[] headers = rows[0];
             rows.Remove(headers);
 
-            // Parse each row array into a more friendly Dictionary
+            
             foreach (string[] row in rows)
             {
                 Dictionary<string, string> rowDict = new Dictionary<string, string>();
@@ -102,9 +121,7 @@ namespace TechJobsConsole
             IsDataLoaded = true;
         }
 
-        /*
-         * Parse a single line of a CSV file into a string array
-         */
+        
         private static string[] CSVRowToStringArray(string row, char fieldSeparator = ',', char stringSeparator = '\"')
         {
             bool isBetweenQuotes = false;
